@@ -17,7 +17,7 @@ CREATE TABLE Users (
 
 CREATE TABLE Posts (
     PostID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT ,
+    UserID INT NOT NULL,
     Content_Type VARCHAR(50),
     Content_Data TEXT,
     Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,8 +37,8 @@ CREATE TABLE Posts (
 
 CREATE TABLE Comments (
     CommentID INT AUTO_INCREMENT PRIMARY KEY,
-    PostID INT,
-    UserID INT,
+    PostID INT NOT NULL,
+    UserID INT NOT NULL,
     Comment_text VARCHAR(255),
     Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (PostID) REFERENCES Posts(PostID) ON DELETE CASCADE,
@@ -47,8 +47,8 @@ CREATE TABLE Comments (
 
 CREATE TABLE Friendships (
     FriendshipID INT AUTO_INCREMENT PRIMARY KEY,
-    UserID INT,
-    FriendID INT,
+    UserID INT NOT NULL,
+    FriendID INT NOT NULL,
     Status VARCHAR(50),
     Request_Sent_date DATE,
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
@@ -57,8 +57,8 @@ CREATE TABLE Friendships (
 
 CREATE TABLE Follows (
     FollowID INT AUTO_INCREMENT PRIMARY KEY,
-    FollowerID INT,
-    FollowedID INT,
+    FollowerID INT NOT NULL,
+    FollowedID INT NOT NULL,
     Follow_date DATE,
     FOREIGN KEY (FollowerID) REFERENCES Users(UserID) ON DELETE CASCADE,
     FOREIGN KEY (FollowedID) REFERENCES Users(UserID) ON DELETE CASCADE
@@ -66,10 +66,10 @@ CREATE TABLE Follows (
 
 CREATE TABLE Messages (
     MessageID INT AUTO_INCREMENT PRIMARY KEY,
-    MessengerID INT,
-    RecipientID INT,
+    MessengerID INT NOT NULL,
+    RecipientID INT NOT NULL,
     Content_Type VARCHAR(50),
-    Content_Data VARCHAR(255),
+    Content_Data TEXT,
     Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Read_status VARCHAR(20),
     FOREIGN KEY (MessengerID) REFERENCES Users(UserID) ON DELETE CASCADE,
@@ -78,7 +78,7 @@ CREATE TABLE Messages (
 
 CREATE TABLE Notifications (
     NotificationID INT AUTO_INCREMENT PRIMARY KEY,
-    NotifiedID INT,
+    NotifiedID INT NOT NULL,
     Notification_type VARCHAR(100), -- (follow,post_created,friend_request,likes,comments)
     Notification_status VARCHAR(20),
     Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -87,16 +87,17 @@ CREATE TABLE Notifications (
 
 CREATE TABLE `Groups` (
     GroupID INT AUTO_INCREMENT PRIMARY KEY,
-    Group_name VARCHAR(255),
+    Group_name VARCHAR(255) NOT NULL UNIQUE,
     Group_Description TEXT,
     Privacy_setting VARCHAR(50) -- ('public,private,invitation-only')
 );
 
 Create TABLE Group_members(
 MembershipID int AUTO_INCREMENT PRIMARY KEY,
-MemberID int,
-GroupID int,
+MemberID INT NOT NULL,
+GroupID INT NOT NULL,
 member_role varchar(50),
+date_joined DATE DEFAULT (CURRENT_DATE),
 FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
 FOREIGN KEY (MemberID) REFERENCES Users(UserID) ON DELETE CASCADE);
 
