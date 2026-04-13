@@ -1,91 +1,104 @@
--- To reset the entire database, dont include in SQL running code unless so.
-DROP TABLE IF EXISTS Notifications;
-DROP TABLE IF EXISTS Messages;
-DROP TABLE IF EXISTS Follows;
-DROP TABLE IF EXISTS Friendships;
-DROP TABLE IF EXISTS Comments;
-DROP TABLE IF EXISTS Posts;
-DROP TABLE IF EXISTS Groups;
-DROP TABLE IF EXISTS Users;
+DROP DATABASE IF EXISTS SOCIAL_MEDIA_PLATFORM;
 
+CREATE DATABASE SOCIAL_MEDIA_PLATFORM;
 
---Users instead of User (User is PostgreSQL keyword)
-Create Table Users (
-UserID int PRIMARY KEY,
-Username varchar(255) NOT NULL UNIQUE,
-Privacy_settings varchar(255),
-Location varchar(255),
-Bio varchar(255)
+USE SOCIAL_MEDIA_PLATFORM;
+
+CREATE TABLE Users (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    Username VARCHAR(127) NOT NULL UNIQUE,
+    password varchar(255),
+    email varchar(255),
+    privacy_setting VARCHAR(30), --(public,friends-only,private)
+    location VARCHAR(100),
+    bio VARCHAR(255),
+    date_joined DATE
 );
 
---Posts instead of Post
-Create Table Posts(
-  PostID int PRIMARY KEY,
-  -- User who made the post
-  UserID int references Users(UserID),
-  Content_Type varchar(50),
-  Content_Data varchar(255),
-  Time_Stamp timestamp,
-  Location_Tag varchar(255),
-  Visibility_Setting varchar(255)
+CREATE TABLE Posts (
+    PostID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT ,
+    Content_Type VARCHAR(50),
+    Content_Data TEXT,
+    Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Location_Tag VARCHAR(50),
+    Visibility_Setting VARCHAR(50),--(public,friends-only,private)
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
---Comments instead of Comment
-Create Table Comments(
-  CommentID int Primary Key,
-  --Post comment is made in
-  PostID int references Posts(PostID),
-  --User who made the comment
-  UserID int references Users(UserID),
-  Comment_text varchar(255),
-  Time_Stamp timestamp
+--CREATE TABLE Likes(
+  --LikeID INT AUTO_INCREMENT PRIMARY KEY,
+  --UserID INT,
+  --PostID INT,
+  --Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  --FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+  --FOREIGN KEY (PostID) REFERENCES Posts(PostID) ON DELETE CASCADE
+--);
+
+CREATE TABLE Comments (
+    CommentID INT AUTO_INCREMENT PRIMARY KEY,
+    PostID INT,
+    UserID INT,
+    Comment_text VARCHAR(255),
+    Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (PostID) REFERENCES Posts(PostID) ON DELETE CASCADE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
---etc...
-Create Table Friendships
-(
-  FriendshipID int PRIMARY KEY,
-  --The user who we're referencing first
-  UserID int references Users(UserID),
-  --Friend of user we're referencing
-  FriendID int references Users(UserID),
-  Status varchar(50),
-  Request_Sent_date date
-);
-  
-Create Table Follows(
-  FollowID int Primary Key,
-  --Follower ID
-  FollowerID int references Users(UserID),
-  --User who is followed
-  FollowedID int references Users(UserID),
-  Follow_date date
+CREATE TABLE Friendships (
+    FriendshipID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT,
+    FriendID INT,
+    Status VARCHAR(50),
+    Request_Sent_date DATE,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (FriendID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
-Create Table Messages(
-  MessageID int Primary Key,
-  --User sending the message
-  MessengerID int references Users(UserID),
-  --User receiving the message
-  RecipientID int references Users(UserID),
-  Content_Type varchar(50),
-  Content_Data varchar(255),
-  Time_Stamp timestamp,
-  Read_status varchar(20)
+CREATE TABLE Follows (
+    FollowID INT AUTO_INCREMENT PRIMARY KEY,
+    FollowerID INT,
+    FollowedID INT,
+    Follow_date DATE,
+    FOREIGN KEY (FollowerID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (FollowedID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
-Create Table Notifications(
-  NotificationID int Primary Key,
-  --User who received notification
-  NotifiedID int references Users(UserID),
-  Notification_type varchar(100),
-  Notification_status varchar(20),
-  Time_Stamp timestamp
+CREATE TABLE Messages (
+    MessageID INT AUTO_INCREMENT PRIMARY KEY,
+    MessengerID INT,
+    RecipientID INT,
+    Content_Type VARCHAR(50),
+    Content_Data VARCHAR(255),
+    Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Read_status VARCHAR(20),
+    FOREIGN KEY (MessengerID) REFERENCES Users(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (RecipientID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
-Create Table Groups(
-  GroupID int Primary Key,
-  Group_name varchar(255),
-  Group_Description varchar(255),
-  Primary_setting varchar(100)
+CREATE TABLE Notifications (
+    NotificationID INT AUTO_INCREMENT PRIMARY KEY,
+    NotifiedID INT,
+    Notification_type VARCHAR(100),
+    Notification_status VARCHAR(20),
+    Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (NotifiedID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
+
+CREATE TABLE `Groups` (
+    GroupID INT AUTO_INCREMENT PRIMARY KEY,
+    Group_name VARCHAR(255),
+    Group_Description TEXT,
+    Privacy_setting VARCHAR(50) -- ('public,private,invitation-only')
+);
+
+Create TABLE Group_members(
+MembershipID int AUTO_INCREMENT PRIMARY KEY,
+MemberID int,
+GroupID int,
+member_role varchar(50),
+FOREIGN KEY (GroupID) REFERENCES `Groups`(GroupID) ON DELETE CASCADE,
+FOREIGN KEY (MemberID) REFERENCES Users(UserID) ON DELETE CASCADE);
+
+
+
