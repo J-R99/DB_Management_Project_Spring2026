@@ -9,7 +9,7 @@ CREATE TABLE Users (
     Username VARCHAR(127) NOT NULL UNIQUE,
     password varchar(255),
     email varchar(255),
-    privacy_setting VARCHAR(30), --(public,friends-only,private)
+    privacy_setting VARCHAR(30), -- (public,friends-only,private)
     location VARCHAR(100),
     bio VARCHAR(255),
     date_joined DATE
@@ -22,18 +22,18 @@ CREATE TABLE Posts (
     Content_Data TEXT,
     Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Location_Tag VARCHAR(50),
-    Visibility_Setting VARCHAR(50),--(public,friends-only,private)
+    Visibility_Setting VARCHAR(50),-- (public,friends-only,private)
     FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
 );
 
---CREATE TABLE Likes(
-  --LikeID INT AUTO_INCREMENT PRIMARY KEY,
-  --UserID INT,
-  --PostID INT,
-  --Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  --FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
-  --FOREIGN KEY (PostID) REFERENCES Posts(PostID) ON DELETE CASCADE
---);
+-- CREATE TABLE Likes(
+  -- LikeID INT AUTO_INCREMENT PRIMARY KEY,
+  -- UserID INT,
+  -- PostID INT,
+  -- Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE,
+  -- FOREIGN KEY (PostID) REFERENCES Posts(PostID) ON DELETE CASCADE
+-- );
 
 CREATE TABLE Comments (
     CommentID INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,7 +79,7 @@ CREATE TABLE Messages (
 CREATE TABLE Notifications (
     NotificationID INT AUTO_INCREMENT PRIMARY KEY,
     NotifiedID INT,
-    Notification_type VARCHAR(100),
+    Notification_type VARCHAR(100), -- (follow,post_created,friend_request,likes,comments)
     Notification_status VARCHAR(20),
     Time_Stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (NotifiedID) REFERENCES Users(UserID) ON DELETE CASCADE
